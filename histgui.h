@@ -4,8 +4,7 @@
 #include<fstream>
 #include<string>
 
-
-TH1D* ParseTxtFile(TString path) {
+TH1D* ParseTxtFileLegacy(TString path) {
 
 	
 	cout << "Opening txt file at path '" << path << "'..." << endl;
@@ -43,10 +42,55 @@ TH1D* ParseTxtFile(TString path) {
 
 	for (Int_t i=0; i<size; i++) {
 
-		TString label = dates[i] + ", " + times[i];
+		TString label = dates[i];
 
 		hTemp->SetBinContent(i+1, temperatures[i]);
-		if (TString(time[i]) == "1200") hTemp->GetXaxis()->SetBinLabel(i+1, label); 
+		//if ((i+1)%1000 == 0) hTemp->GetXaxis()->SetBinLabel(i+1, label); 
+	}
+
+	return hTemp;
+
+}
+
+TH1D* ParseTxtFile(TString path) {
+
+	
+	cout << "Opening txt file at path '" << path << "'..." << endl;
+	
+	ifstream inputfile;
+	inputfile.open(path);
+	string value;
+	string date;
+	string time;
+	string dummy;
+	vector<double> temperatures;
+	vector<string> dates;
+	vector<string> times;
+
+	while (inputfile >> date >> time >> value) {
+
+		double temp = stod(value);
+
+		if (temp < -50 || temp > 50) continue;
+
+		cout << temp << " deg. Celsius" << endl;
+		temperatures.push_back(temp);
+		dates.push_back(date);
+		times.push_back(time);
+
+	}
+
+	Int_t size = temperatures.size();
+
+	TH1D *hTemp = new TH1D ("hTemp", "", size, 0.5, size);
+
+	for (Int_t i=0; i<size; i++) {
+
+		TString label = dates[i];
+
+		hTemp->SetBinContent(i+1, temperatures[i]);
+		//hTemp->GetXaxis()->SetBinLabel(i+1, label); 
+		//if ((i+1)%1000 == 0) hTemp->GetXaxis()->SetBinLabel(i+1, label); 
 	}
 
 	return hTemp;
@@ -60,41 +104,64 @@ private:
 	const TGWindow*		window;
 	TGMainFrame*		fMain;
 	TRootEmbeddedCanvas*	fEcanvas;
-   	TF1*			func;
 	TH1D*			hist;
-	Bool_t			isZoomed = false;
 	TString			path;
+	Bool_t			isRunning=false;
+	TTimer*			timer;
+	TGTextView*		status;
 
 
 public:
 	MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h);
 	virtual ~MyMainFrame();
-	void SetFunction();
-	void SetHistogram();	
-	void ToggleZoom();
+	void LoadHistogram();
+	void SetHistogram();
+	void Refresh();
 	void DoDraw();
+	void ToggleTransmission();
+	void Update();
+	
 };
 MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) {
+
 	window=p;
+	path = "";
 	// Create a main frame
 	fMain = new TGMainFrame(p,w,h);
 
-	// Create canvas widget
-	fEcanvas = new TRootEmbeddedCanvas("Ecanvas",fMain,400,400);
-	fMain->AddFrame(fEcanvas, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY, 10,10,10,1));
-	// Create a horizontal frame widget with buttons
-	TGHorizontalFrame *hframe = new TGHorizontalFrame(fMain,800,640);
+	// Create a timer
+   	timer = new TTimer(100);
+   	timer->SetCommand("Update()");
 
-	TGTextButton *load = new TGTextButton(hframe,"Load .txt file");
-	load->Connect("Clicked()","MyMainFrame",this,"SetHistogram()");
+	// Create a horizontal frame widget with buttons
+	TGHorizontalFrame *hframe = new TGHorizontalFrame(fMain,200,20);
+
+	// Create three buttions
+	TGTextButton *load = new TGTextButton(hframe,"Select .txt file");
+	load->Connect("Clicked()","MyMainFrame",this,"LoadHistogram()");
 	hframe->AddFrame(load, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
+
+	TGTextButton *transmission = new TGTextButton(hframe,"Transmission status");
+	transmission->Connect("Clicked()","MyMainFrame",this,"ToggleTransmission()");
+	hframe->AddFrame(transmission, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
 
 	TGTextButton *exit = new TGTextButton(hframe,"Exit","gApplication->Terminate(0)");
 	hframe->AddFrame(exit, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
 
+	//Add horizontal frame with widgets
 	fMain->AddFrame(hframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+	// Create canvas widget
+	fEcanvas = new TRootEmbeddedCanvas("Ecanvas",fMain,400,300);
+	fMain->AddFrame(fEcanvas, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY, 10,10,10,1));	
+
+	// Create text viewer for dialog communication
+	status = new TGTextView(fMain, 400, 25, "Select .txt file first...");
+	status->SetForegroundColor(Pixel_t(kRed));
+	fMain->AddFrame(status, new TGLayoutHints(kLHintsCenterX, 5,5,3,4));
+
 	// Set a name to the main frame
-	fMain->SetWindowName("HistoDrawer v0.2");
+	fMain->SetWindowName("HistoDrawer v0.3");
 
 	// Map all subwindows of main frame
 	fMain->MapSubwindows();
@@ -105,60 +172,87 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) {
 	// Map main frame
 	fMain->MapWindow();
 
-	//cout << "Histogram has to be set manually using SetHistogram()!" << endl;
-
-	// Set function and isZoomed
-	//SetHistogram(hTemp);
-	//isZoomed = false;
-	
+	// turn on timer
+	timer->TurnOn();
 
 
 }
-void MyMainFrame::SetFunction() {
-	func = new TF1("func", "sin(x)/x", 0, 10);
-}
-void MyMainFrame::SetHistogram() {
 
-	cout<<"blip"<<endl;
+void MyMainFrame::LoadHistogram() {
+
 	TGFileInfo* fileinfo = new TGFileInfo();
-	//fileinfo->fIniDir("./");
 	TGFileDialog *file = new TGFileDialog(window, fMain, kFDOpen, fileinfo);
-	//fMain->AddFrame(file);
-	//file->CloseWindow();
-	//TGTextEntry filename = fileinfo->fName;
-	cout <<"blip1"<<endl;
+
 	path = fileinfo->fFilename;
 
 	if (!(path=="")){
-		cout<<"blip2"<<endl;
 		hist = ParseTxtFile(path);
+		SetHistogram();
 		DoDraw();
 	}
 }
-void MyMainFrame::ToggleZoom() {
 
-	if (!isZoomed) {
-		hist->GetXaxis()->SetRangeUser(0, 1);
-		isZoomed = true;
-	}
+void MyMainFrame::SetHistogram() {
+	
+	TString xTitle = "t [h]";
+	TString yTitle = "T [^{#circ} C]";
+	
+	TAxis* xaxis = hist->GetXaxis();
+	TAxis* yaxis = hist->GetYaxis();
 
-	else if (isZoomed) {
-		hist->GetXaxis()->SetRangeUser(0, 1000);
-		isZoomed = false;
-	}
+	xaxis->SetTitle(xTitle);
+	yaxis->SetTitle(yTitle);
 
-	DoDraw();
+	xaxis->SetNdivisions(505);
+	yaxis->SetNdivisions(510);
+
 }
 void MyMainFrame::DoDraw() {
-	// Draws function graphics in randomly chosen interval
-	//TF1 *f1 = new TF1("f1","sin(x)/x",0,gRandom->Rndm()*10);
-	
+
 	gStyle->SetOptStat(0);	
 	hist->SetLineWidth(3);
 	hist->Draw("L");
 	TCanvas *hCanvas = fEcanvas->GetCanvas();
 	hCanvas->cd();
 	hCanvas->Update();
+}
+void MyMainFrame::Refresh() {
+	TCanvas *hCanvas = fEcanvas->GetCanvas();
+	hCanvas->cd();
+	hCanvas->Update();
+}
+void MyMainFrame::ToggleTransmission() {
+
+	Bool_t isRunningCopy = isRunning;
+
+	if (!(path=="")) {
+
+		if (isRunningCopy) {
+			isRunning = false;
+			status->Clear();
+			status->SetText(new TGText("Standby..."));			
+			status->Update();
+		}
+		else if (!isRunningCopy) {
+			isRunning = true;
+			status->Clear();
+			status->SetText(new TGText("Streaming active!"));
+			status->ShowTop();
+			status->Update();
+		}
+
+		cout << "value of isRunning is now " << isRunning <<endl;
+	}
+}
+void MyMainFrame::Update() {
+
+	if (isRunning){
+		hist = ParseTxtFile(path);
+		SetHistogram();
+		DoDraw();		
+		Refresh();	
+	}
+
 }
 MyMainFrame::~MyMainFrame() {
 	// Clean up used widgets: frames, buttons, layout hints

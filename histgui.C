@@ -1,10 +1,21 @@
 #include "histgui.h"
 
+
+//global variables
+MyMainFrame *frame;
+
+
+void Update() {
+
+	frame->Update();
+
+}
+
 void histgui () {
 
 	cout << "Hello World!" << endl;
 
-	MyMainFrame *frame = new MyMainFrame(gClient->GetRoot(), 800, 640);
+	frame = new MyMainFrame(gClient->GetRoot(), 1, 1);
 	
 
 }	
