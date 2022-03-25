@@ -17,7 +17,9 @@ without any heading rows.
 
 The transmitter.C macro can be easily adjusted to convert different .txt files to the format accepted by histgui.C. Transmitter.C is currently set to read .txt files with climate data attached in this repository, that come from National Centers for Environmental Information of USA [1].
 
-[1] https://www.ncei.noaa.gov/
-
-By Jan Orlinski for Computer Tools for Nuclear Physics at FUW (2021/2022).
+By Jan Orlinski for Computer Tools for Nuclear Physics at FUW [2] (2021/2022).
 Readme last updated on 25 march 11:43.
+
+
+[1] https://www.ncei.noaa.gov/
+[2] https://fuw.edu.pl/
