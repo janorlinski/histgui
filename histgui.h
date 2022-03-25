@@ -161,7 +161,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) {
 	fMain->AddFrame(status, new TGLayoutHints(kLHintsCenterX, 5,5,3,4));
 
 	// Set a name to the main frame
-	fMain->SetWindowName("HistoDrawer v0.3");
+	fMain->SetWindowName("HistoDrawer v1.0");
 
 	// Map all subwindows of main frame
 	fMain->MapSubwindows();
