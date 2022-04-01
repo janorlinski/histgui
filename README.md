@@ -24,6 +24,8 @@ Current to-do list for v. 1.1:
  - slider to control the smoothing of the TH1D
  - control lights simulator: one for transmission status, one for temperature alert
  - "Update the histogram to show: Full range / Last 24h".
+ - add dependent button activation/deactivation
+ - update readme after implementing the functionalities above ;)
 
 ## footnote
 
