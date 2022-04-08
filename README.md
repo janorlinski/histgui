@@ -9,10 +9,10 @@ ROOT is required. ROOT6 is recommended.
 
 1. Download and unpack this repository. 
 
-2. Run histogui.C with 
+2. Run histgui.C with 
 
 ```
-root -l histogui.C
+root -l histgui.C
 ```
 
 3. To initialize data reading from a .txt file, click on "Select .txt file". This repository already includes the exemplary "transmission.txt" file.
