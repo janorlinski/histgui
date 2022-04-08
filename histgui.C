@@ -17,6 +17,5 @@ void histgui () {
 
 	frame = new MyMainFrame(gClient->GetRoot(), 1, 1);
 	
-
 }	
 
