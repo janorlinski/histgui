@@ -47,12 +47,13 @@ No other issues are currently known.
 
 ### current objectives
 
-Further development of this project is currently suspended.
+Minor bug fixes, code cleaning and optimisation.
+Development of new features for this project is currently suspended.
 
 ### footnote
 
 By Jan Orlinski for Computer Tools for Nuclear Physics at FUW [3] (2021/2022).
-Readme last updated on 7 april 10:14.
+Readme last updated on 7 april 10:15.
 
 [1] https://root.cern/
 
