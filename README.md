@@ -45,7 +45,7 @@ The axis titles can be adjusted by modifying the `SetHistogram()` function.
 
 The "Zoom to last 48h" button seems to not work, unless the DAQ is running. 
 
-When transmission is paused, the TH1D can be easily manipulated by right-clicking on the TCanvas. Also, if the .txt file itself does not refresh, one can safely toggle the Tramission status to on. 
+When transmission is paused, the TH1D can be easily manipulated by right-clicking on the TCanvas. Also, even if the .txt file itself does not refresh, one can still safely toggle the Tramission status to on. 
 
 No other issues are currently known.
 
