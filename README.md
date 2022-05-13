@@ -1,6 +1,6 @@
 # thermagui
 
-Thermagui is a simple GUI application based on the ROOT evnironment for C++. It uses the PLUTO code to simulate thermal emmision of hadrons from a heavy-ion collision zone. The application allows for quick and intutive setup of the simulation which can be bothersome when done manually. Along saving the standard PLUTO output file, thanks to the ROOT GUI, the user can quickly create a histogram of interest and watch it being filled in real time. This comes close to a <<fast prototyping>> approach, since the user can quickly and easily examine typical distributions.
+Thermagui is a simple GUI application based on the ROOT evnironment for C++. It uses the PLUTO code to simulate thermal emmision of hadrons from a heavy-ion collision zone. The application allows for quick and intutive setup of the simulation which can be bothersome when done manually. Along saving the standard PLUTO output file, thanks to the ROOT GUI, the user can quickly create a histogram of interest and watch it being filled in real time. This comes close to a "fast prototyping" approach, since the user can quickly and easily examine typical distributions.
 
  #---------------------------------------------------
   
