@@ -12,7 +12,7 @@ ROOT [1] and PLUTO [???] is required. ROOT6 and PLUTO6 are recommended.
 
 2. 
 
-### common issues / troubleshooting
+### known issues / troubleshooting
 
   
 
