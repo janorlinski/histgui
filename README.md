@@ -35,7 +35,7 @@ The GUI app only accepts .txt files with data of the following format:
 
 without any heading rows. 
 
-Moreover, it will assume that datapoints are separated by one hour. 
+Moreover, it will assume that datapoints are separated by one hour (yes, this makes the DATE and TIMESTAMP columns redundant - sue me). This is matters only for describing the X axis of the histogram and can be easily tweaked. 
 
 The transmitter.C macro can be easily adjusted to convert different .txt files to the format accepted by histgui.C. Transmitter.C is currently set to read .txt files with climate data attached in this repository, that come from National Centers for Environmental Information of USA [2].
 
@@ -57,7 +57,7 @@ Development of new features for this project is currently suspended.
 ### footnote
 
 By Jan Orlinski for Computer Tools for Nuclear Physics at FUW [3] (2021/2022).
-Readme last updated on 7 april 10:17.
+Readme last updated on 30th November 2023, 10:11.
 
 [1] https://root.cern/
 
